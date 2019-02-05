@@ -38,7 +38,8 @@ class PostController extends Controller
     {	
 		$postData = null ;
 		$formaction = '/store';
-		return view('post.new_blog_post_form', compact('postData','formaction'));	
+		$userid = !empty( Auth::user()->id ) ? Auth::user()->id : 0; 
+		return view('post.new_blog_post_form', compact('postData','formaction','userid'));	
     }
 
     /**
@@ -49,13 +50,13 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {	
-		$userid = Auth::user()->id;	
+		$userid = !empty( Auth::user()->id ) ? Auth::user()->id : 0;
         try{
 			$postData = array(
 				'title' => $request->input('title'),
 				'content' => $request->input('content'),
-				'created_by' => 1,
-				'updated_by' => 1			
+				'created_by' => !empty( Auth::user()->id ) ? Auth::user()->id : 0,
+				'updated_by' => !empty( Auth::user()->id ) ? Auth::user()->id : 0,			
 			);
 			$response = $this->postModelObj->create( $postData );
 			if( $response && $response->wasRecentlyCreated == true ){
@@ -106,7 +107,8 @@ class PostController extends Controller
     {	
         $postData = $this->postModelObj->find( $id );
 		$formaction = '/update/'.$id;
-		return view('post.new_blog_post_form', compact('postData','formaction'));	
+		$userid = !empty( Auth::user()->id ) ? Auth::user()->id : 0; 
+		return view('post.new_blog_post_form', compact('postData','formaction','userid'));	
     }
 
     /**
@@ -118,13 +120,13 @@ class PostController extends Controller
      */
     public function update(Request $request, $id)
     {	
-		$userid = Auth::user()->id;	
+		$userid = !empty( Auth::user()->id ) ? Auth::user()->id : 0,
 		$response = 0;
 		try{
 			$postData = array(
 				'title' => $request->input('title'),
 				'content' => $request->input('content'),
-				'updated_by' => 1			
+				'updated_by' => !empty( Auth::user()->id ) ? Auth::user()->id : 0,			
 			);
 			$response = $this->postModelObj->where('id', $id)->update( $postData );
 			if( $response ){
